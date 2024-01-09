@@ -18,7 +18,7 @@ export default defineConfig({
         {
           name: '',
           path: '',
-          component: './Home'
+          component: './home',
         },
       ],
     },
@@ -26,18 +26,26 @@ export default defineConfig({
     {
       name: '应用',
       path: '/app',
-      component: './App',
+      component: './apps',
     },
     {
       name: '应用详情',
-      path: '/app/Application',
-      component: './Application',
+      path: '/app/:id',
+      component: './application',
       hideInMenu: true,
+      routes: [
+        { name: '', path: '/app/:id', component: './application/baseinfo' },
+        { name: '', path: '/app/:id/changes', component: './application/changes' },
+        { name: '', path: '/app/:id/publishing', component: './application/publishing' },
+        { name: '', path: '/app/:id/publish-history', component: './application/publish-history' },
+        { name: '', path: '/app/:id/members', component: './application/members' },
+        { name: '', path: '/app/:id/settings', component: './application/settings' },
+      ],
     },
     {
       name: '组件',
       path: '/component',
-      component: './Component',
+      component: './component',
     },
     {
       name: '工具',
@@ -47,7 +55,7 @@ export default defineConfig({
     {
       name: '登录',
       path: '/login',
-      component: './Login',
+      component: './login',
       hideInMenu: true,
       menuRender: false,
     },
