@@ -1,15 +1,18 @@
+import request from '@/utils/request';
 import { PlusOutlined } from '@ant-design/icons';
+import type { ProFormInstance } from '@ant-design/pro-components';
 import {
   GridContent,
   ModalForm,
   PageContainer,
   ProForm,
-  ProFormDateRangePicker,
-  ProFormSelect,
+  ProFormRadio,
   ProFormText,
+  ProFormTextArea,
 } from '@ant-design/pro-components';
 import { Link } from '@umijs/max';
-import { Button, Card, List, message, Form } from 'antd';
+import { App, Button, Card, Input, List, Space } from 'antd';
+import { useRef } from 'react';
 
 const data = [
   {
@@ -44,22 +47,20 @@ const data = [
   },
 ];
 
-const AddButton = () => {
-  const [form] = Form.useForm<{ name: string; company: string }>();
+type AppForm = {
+  appCode: string;
+  appType: string;
+  name: string;
+  desc: string;
+  gitUrl: string;
+  createGitRepo: boolean;
+};
 
-  const waitTime = (time: number = 100) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, time);
-    });
-  };
+const AddButton = () => {
+  const formRef = useRef<ProFormInstance<AppForm>>();
 
   return (
-    <ModalForm<{
-      name: string;
-      company: string;
-    }>
+    <ModalForm<AppForm>
       title="创建应用"
       trigger={
         <Button type="primary">
@@ -67,7 +68,11 @@ const AddButton = () => {
           创建应用
         </Button>
       }
-      form={form}
+      // form={form}
+      initialValues={{ appType: 0 }}
+      formRef={formRef}
+      labelCol={{ span: 4 }}
+      wrapperCol={{ span: 14 }}
       layout="horizontal"
       autoFocusFirstInput
       modalProps={{
@@ -76,104 +81,85 @@ const AddButton = () => {
       }}
       submitTimeout={2000}
       onFinish={async (values) => {
-        await waitTime(2000);
-        console.log(values.name);
-        message.success('提交成功');
-        return true;
+        const val1 = await formRef.current?.validateFields();
+        console.log('validateFields:', val1);
+        // const val2 = await formRef.current?.validateFieldsReturnFormatValue?.();
+        // console.log('validateFieldsReturnFormatValue:', val2);
+        // message.success('提交成功');
+        const res = await request('/add', {
+          method: 'POST',
+          data: {
+            ...val1,
+          },
+        });
+        return false;
       }}
     >
-      <ProForm.Group>
-        <ProFormText
-          width="md"
-          name="name"
-          label="任务名称"
-          placeholder="版本名称"
-          required
-        />
-
-        <ProFormText
-          width="md"
-          name="company"
-          label="我方公司名称"
-          placeholder="请输入名称"
-        />
-      </ProForm.Group>
-      <ProForm.Group>
-        <ProFormText
-          width="md"
-          name="contract"
-          label="合同名称"
-          placeholder="请输入名称"
-        />
-        <ProFormDateRangePicker name="contractTime" label="合同生效时间" />
-      </ProForm.Group>
-      <ProForm.Group>
-        <ProFormSelect
-          request={async () => [
-            {
-              value: 'chapter',
-              label: '盖章后生效',
-            },
-          ]}
-          width="xs"
-          name="useMode"
-          label="合同约定生效方式"
-        />
-        <ProFormSelect
-          width="xs"
-          options={[
-            {
-              value: 'time',
-              label: '履行完终止',
-            },
-          ]}
-          name="unusedMode"
-          label="合同约定失效效方式"
-        />
-      </ProForm.Group>
-      <ProFormText width="sm" name="id" label="主合同编号" />
       <ProFormText
-        name="project"
-        disabled
-        label="项目名称"
-        initialValue="xxxx项目"
+        width="md"
+        name="appCode"
+        label="AppCode"
+        placeholder="输入应用名称"
+        required
+        rules={[{ required: true, message: '这是必填项' }]}
       />
-      <ProFormText
-        width="xs"
-        name="mangerName"
-        disabled
-        label="商务经理"
-        initialValue="启途"
+      <ProFormRadio.Group
+        label="应用类型"
+        name="appType"
+        options={['PC', 'H5']}
+        required
       />
+      <ProFormRadio.Group
+        label="仓库类型"
+        name="createGitRepo"
+        options={[
+          { label: '创建仓库', value: true },
+          { label: '关联仓库', value: false },
+        ]}
+        required
+      />
+      <ProForm.Item label="仓库地址" name="gitUrl">
+        <Space direction="vertical">
+          <Input
+            addonBefore="git@github.com:Joyee/"
+            addonAfter=".git"
+            defaultValue=""
+          />
+        </Space>
+      </ProForm.Item>
+      <ProFormText width="md" name="name" label="名称" placeholder="名称" />
+      <ProFormTextArea width="xl" label="描述" name="desc" />
     </ModalForm>
   );
 };
 
 const Apps = () => {
   return (
-    <PageContainer
-      header={{
-        title: '应用',
-        ghost: true,
-        extra: [<AddButton></AddButton>],
-      }}
-    >
-      <GridContent content="Fluid">
-        <List
-          grid={{ gutter: 8, xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 5 }}
-          dataSource={data}
-          renderItem={(item, index) => (
-            <List.Item>
-              <Link to={`/app/${item.id}`}>
-                <Card title={item.title} hoverable>
-                  {item.content}
-                </Card>
-              </Link>
-            </List.Item>
-          )}
-        />
-      </GridContent>
-    </PageContainer>
+    <App>
+      <PageContainer
+        header={{
+          title: '应用',
+          ghost: true,
+          extra: [<AddButton key="1"></AddButton>],
+        }}
+      >
+        <GridContent content="Fluid">
+          <List
+            grid={{ gutter: 8, xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 5 }}
+            dataSource={data}
+            renderItem={(item) => (
+              <List.Item>
+                <Link to={`/app/${item.id}`}>
+                  <Card title={item.title} hoverable>
+                    {item.content}
+                  </Card>
+                </Link>
+              </List.Item>
+            )}
+          />
+        </GridContent>
+      </PageContainer>
+    </App>
   );
 };
 

@@ -23,6 +23,9 @@ dependencies:
   react-router-dom:
     specifier: ^6.21.1
     version: 6.21.1(react-dom@18.2.0)(react@18.2.0)
+  umi-request:
+    specifier: ^1.4.0
+    version: 1.4.0
 
 devDependencies:
   '@types/react':
@@ -10550,6 +10553,13 @@ packages:
     resolution: {integrity: sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  /umi-request@1.4.0:
+    resolution: {integrity: sha512-OknwtQZddZHi0Ggi+Vr/olJ7HNMx4AzlywyK0W3NZBT7B0stjeZ9lcztA85dBgdAj3KVk8uPJPZSnGaDjELhrA==}
+    dependencies:
+      isomorphic-fetch: 2.2.1
+      qs: 6.11.2
+    dev: false
 
   /umi@4.1.0(@babel/core@7.23.7)(@types/react@18.2.47)(eslint@8.35.0)(prettier@3.1.1)(react-dom@18.2.0)(react@18.2.0)(stylelint@14.8.2)(typescript@5.3.3)(webpack@5.89.0):
     resolution: {integrity: sha512-qNvYmZuXPP05OihSyR97IbHEpktHN1AGfMyxFeZtnTHZfSmaft36pLfH14PUXpFpUcAL5naiUuD0wcXzU3K+ag==}
